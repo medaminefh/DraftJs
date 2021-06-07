@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Editor, EditorState, RichUtils } from "draft-js";
+import "draft-js/dist/Draft.css";
 
-function App() {
+function MyEditor() {
+  const [editorState, setEditorState] = React.useState(() =>
+    EditorState.createEmpty()
+  );
+
+  const handleKeyCommand = (command, editorState) => {
+    const newState = RichUtils.handleKeyCommand(editorState, command);
+
+    if (newState) {
+      setEditorState(newState);
+      return "handled";
+    }
+
+    return "not-handled";
+  };
+
+  const _onBoldClick = () => {
+    setEditorState(RichUtils.toggleInlineStyle(editorState, "BOLD"));
+  };
+
+  const _onItalicClick = () => {
+    setEditorState(RichUtils.toggleInlineStyle(editorState, "ITALIC"));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <button onClick={_onBoldClick}>Bold</button>
+      <button onClick={_onItalicClick}>Italic</button>
+      <Editor
+        editorState={editorState}
+        handleKeyCommand={handleKeyCommand}
+        onChange={setEditorState}
+      />
     </div>
   );
 }
-
-export default App;
+export default MyEditor;
